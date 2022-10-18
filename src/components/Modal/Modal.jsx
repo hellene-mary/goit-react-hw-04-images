@@ -1,4 +1,4 @@
-import css from './Modal.modale.css';
+// import css from './Modal.module.css';
 
 export function Modal() {
     return (
