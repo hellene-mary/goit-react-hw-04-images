@@ -1,3 +1,8 @@
+.buttonContainer {
+    display: flex;
+    justify-content: space-around;
+    padding: 20px;
+}
 .button {
     padding: 8px 16px;
     border-radius: 2px;
