@@ -31,13 +31,11 @@ class App extends Component {
 
         //для нового пошуку
         if (prevSearch !== currentSearch) {
-            this.setState({ loading: true, page: 1 });
+            this.setState({ loading: true, page: 1, images: [] });
 
             const response = await this.Api();
 
             if (response.data.hits.length === 0) {
-                //сповіщення
-                // console.log('Немає зображень', response.data.hits);
                 return this.notificationError();
             }
             this.setState({ images: response.data.hits, totalImage: response.data.totalHits });
@@ -113,8 +111,6 @@ class App extends Component {
 
     //просто збільшує сторінку на 1
     loadMoreImages = () => {
-        // console.log('click on Load more');
-
         this.setState(prevState => {
             return { page: prevState.page + 1 };
         });
@@ -127,7 +123,6 @@ class App extends Component {
         const { images, showModal, modal, loading, page, totalImage } = this.state;
         const maxPage = Math.ceil(totalImage / 12);
         const showButton = images.length > 0 && page < maxPage;
-        // console.log('showButton', showButton);
 
         return (
             <>

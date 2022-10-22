@@ -4,30 +4,25 @@ import css from './Modal.module.css';
 class Modal extends Component {
     state = {};
 
-    //*слухач на клік по клавіатурі
+    //слухач на клік по клавіатурі
     componentDidMount() {
         window.addEventListener('keydown', this.keydownClick);
     }
 
-    //*видалення слухача на клік по клавіатурі
+    //видалення слухача на клік по клавіатурі
     componentWillUnmount() {
         window.removeEventListener('keydown', this.keydownClick);
     }
 
-    //*закриття модалки по кліку на Escape
+    //закриття модалки по кліку на Escape
     keydownClick = evt => {
-        // console.log('evt.code', evt.code);
         if (evt.code === 'Escape') {
-            // console.log('esc');
-
             this.props.onClose();
         }
     };
 
-    //*закриття модалки по кліку на overly
+    //закриття модалки по кліку на overly
     backdropClick = evt => {
-        // console.log('evt.target', evt.target);
-        // console.log('evt.currentTarget', evt.currentTarget);
         if (evt.target === evt.currentTarget) {
             this.props.onClose();
         }
