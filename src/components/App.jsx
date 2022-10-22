@@ -17,6 +17,7 @@ class App extends Component {
         loading: false,
         showModal: false,
         modal: {},
+        totalImage: 0,
     };
 
     //*отримання значення інпуту пошуку
@@ -59,7 +60,14 @@ class App extends Component {
                 },
             });
 
-            this.setState({ images: response.data.hits });
+            // console.log('response.data.hits', response.data.totalHits);
+            this.setState({ totalImage: response.data.totalHits });
+
+            this.setState(prevState => {
+                return {
+                    images: [...prevState.images, ...response.data.hits],
+                };
+            });
         } catch (error) {
             console.log('error', error);
         } finally {
@@ -86,7 +94,7 @@ class App extends Component {
     };
 
     loadMoreImages = () => {
-        console.log('click on Load more');
+        // console.log('click on Load more');
 
         this.setState(prevState => {
             return { page: prevState.page + 1 };
@@ -94,8 +102,10 @@ class App extends Component {
     };
 
     render() {
-        const { images, showModal, modal, loading } = this.state;
-        console.log('images', images.length > 0);
+        const { images, showModal, modal, loading, page, totalImage } = this.state;
+        const maxPage = Math.ceil(totalImage / 12);
+        const showButton = images.length > 0 && page < maxPage;
+        console.log('showButton', showButton);
 
         return (
             <>
@@ -106,7 +116,7 @@ class App extends Component {
                     ))}
                 </ImageGallery>
                 {loading && <Loader />}
-                {images.length > 0 && <Button onClick={this.loadMoreImages} />}
+                {showButton && <Button onClick={this.loadMoreImages} />}
                 {showModal && <Modal image={modal} onClose={this.closeModal} />}
             </>
         );
