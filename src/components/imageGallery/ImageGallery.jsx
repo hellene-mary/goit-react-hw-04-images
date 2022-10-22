@@ -1,5 +1,5 @@
-// import css from './ImageGallery.module.css';
+import css from './ImageGallery.module.css';
 
-export function ImageGallery() {
-    return <ul className="ImageGallery">{/* <!-- Набір <li> із зображеннями --> */}</ul>;
+export function ImageGallery({ children }) {
+    return <ul className={css.imageGallery}>{children}</ul>;
 }
