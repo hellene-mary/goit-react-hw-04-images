@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import axios from 'axios';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { Button } from './Button/Button';
 import { ImageGallery } from './imageGallery/ImageGallery';
 import { Loader } from './Loader/Loader';
@@ -20,18 +22,6 @@ class App extends Component {
         totalImage: 0,
     };
 
-    //отримання значення інпуту пошуку
-    trackingSearch = evt => {
-        evt.preventDefault();
-
-        const form = evt.currentTarget;
-        const searchValue = form.elements.search.value;
-        // console.log('searchValue', searchValue);
-        this.setState({ search: searchValue });
-
-        form.reset();
-    };
-
     // стадія оновлення
     async componentDidUpdate(prevProps, prevState) {
         const prevSearch = prevState.search;
@@ -47,7 +37,8 @@ class App extends Component {
 
             if (response.data.hits.length === 0) {
                 //сповіщення
-                console.log('Немає зображень', response.data.hits);
+                // console.log('Немає зображень', response.data.hits);
+                return this.notificationError();
             }
             this.setState({ images: response.data.hits, totalImage: response.data.totalHits });
         }
@@ -86,6 +77,22 @@ class App extends Component {
         }
     };
 
+    //отримання значення інпуту пошуку
+    trackingSearch = evt => {
+        evt.preventDefault();
+
+        const form = evt.currentTarget;
+        const searchValue = form.elements.search.value;
+
+        if (searchValue.trim() === '') {
+            return this.notificationInfo();
+        }
+
+        this.setState({ search: searchValue });
+
+        form.reset();
+    };
+
     // toggleModal = evt => {
     //     this.setState({ modal: { alt: evt.target.alt, url: evt.currentTarget.dataset.large } });
 
@@ -113,6 +120,9 @@ class App extends Component {
         });
     };
 
+    notificationError = () => toast.error('Nothing was found for your request. Try again!');
+    notificationInfo = () => toast.info('Write something and we will find it!');
+
     render() {
         const { images, showModal, modal, loading, page, totalImage } = this.state;
         const maxPage = Math.ceil(totalImage / 12);
@@ -130,6 +140,18 @@ class App extends Component {
                 {loading && <Loader />}
                 {showButton && <Button onClick={this.loadMoreImages} />}
                 {showModal && <Modal image={modal} onClose={this.closeModal} />}
+                <ToastContainer
+                    position="top-right"
+                    autoClose={5000}
+                    hideProgressBar
+                    newestOnTop
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme="colored"
+                />
             </>
         );
     }
