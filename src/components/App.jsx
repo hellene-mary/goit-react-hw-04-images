@@ -20,7 +20,7 @@ class App extends Component {
         totalImage: 0,
     };
 
-    //*отримання значення інпуту пошуку
+    //отримання значення інпуту пошуку
     trackingSearch = evt => {
         evt.preventDefault();
 
@@ -39,10 +39,29 @@ class App extends Component {
         const prevPage = prevState.page;
         const currentPage = this.state.page;
 
-        if (prevSearch !== currentSearch || prevPage !== currentPage) {
+        //для нового пошуку
+        if (prevSearch !== currentSearch) {
+            this.setState({ loading: true, page: 1 });
+
+            const response = await this.Api();
+
+            if (response.data.hits.length === 0) {
+                //сповіщення
+                console.log('Немає зображень', response.data.hits);
+            }
+            this.setState({ images: response.data.hits, totalImage: response.data.totalHits });
+        }
+
+        //для новї сторінки
+        if (prevPage !== currentPage) {
             this.setState({ loading: true });
 
-            this.Api();
+            const response = await this.Api();
+            this.setState(prevState => {
+                return {
+                    images: [...prevState.images, ...response.data.hits],
+                };
+            });
         }
     }
 
@@ -59,15 +78,7 @@ class App extends Component {
                     page: this.state.page,
                 },
             });
-
-            // console.log('response.data.hits', response.data.totalHits);
-            this.setState({ totalImage: response.data.totalHits });
-
-            this.setState(prevState => {
-                return {
-                    images: [...prevState.images, ...response.data.hits],
-                };
-            });
+            return response;
         } catch (error) {
             console.log('error', error);
         } finally {
@@ -93,6 +104,7 @@ class App extends Component {
         this.setState({ showModal: false });
     };
 
+    //просто збільшує сторінку на 1
     loadMoreImages = () => {
         // console.log('click on Load more');
 
@@ -105,7 +117,7 @@ class App extends Component {
         const { images, showModal, modal, loading, page, totalImage } = this.state;
         const maxPage = Math.ceil(totalImage / 12);
         const showButton = images.length > 0 && page < maxPage;
-        console.log('showButton', showButton);
+        // console.log('showButton', showButton);
 
         return (
             <>
