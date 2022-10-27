@@ -1,47 +1,37 @@
-import React, { Component } from 'react';
+import React, { useEffect } from 'react';
 import css from './Modal.module.css';
 
-class Modal extends Component {
-    state = {};
+function Modal({ image, onClose }) {
+  const { url, alt } = image;
 
-    //слухач на клік по клавіатурі
-    componentDidMount() {
-        window.addEventListener('keydown', this.keydownClick);
-    }
+  useEffect(() => {
+    window.addEventListener('keydown', keydownClick);
 
-    //видалення слухача на клік по клавіатурі
-    componentWillUnmount() {
-        window.removeEventListener('keydown', this.keydownClick);
-    }
-
-    //закриття модалки по кліку на Escape
-    keydownClick = evt => {
-        if (evt.code === 'Escape') {
-            this.props.onClose();
-        }
+    return () => {
+      window.removeEventListener('keydown', keydownClick);
     };
+  });
 
-    //закриття модалки по кліку на overly
-    backdropClick = evt => {
-        if (evt.target === evt.currentTarget) {
-            this.props.onClose();
-        }
-    };
-
-    render() {
-        const {
-            onClick,
-            image: { alt, url },
-        } = this.props;
-
-        return (
-            <div className={css.overlay} onClick={this.backdropClick}>
-                <div className={css.modal}>
-                    <img src={url} alt={alt} onClick={onClick} />
-                </div>
-            </div>
-        );
+  function backdropClick(evt) {
+    if (evt.target === evt.currentTarget) {
+      onClose();
     }
+  }
+
+  function keydownClick(evt) {
+    // console.log('evt.code', evt.code);
+    if (evt.code === 'Escape') {
+      onClose();
+    }
+  }
+
+  return (
+    <div className={css.overlay} onClick={backdropClick}>
+      <div className={css.modal}>
+        <img src={url} alt={alt} />
+      </div>
+    </div>
+  );
 }
 
 export default Modal;
