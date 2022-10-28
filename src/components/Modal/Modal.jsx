@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import css from './Modal.module.css';
 
-function Modal({ image, onClose }) {
+export function Modal({ onClose, image }) {
   const { url, alt } = image;
 
   useEffect(() => {
@@ -19,7 +19,6 @@ function Modal({ image, onClose }) {
   }
 
   function keydownClick(evt) {
-    // console.log('evt.code', evt.code);
     if (evt.code === 'Escape') {
       onClose();
     }
@@ -33,5 +32,3 @@ function Modal({ image, onClose }) {
     </div>
   );
 }
-
-export default Modal;

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { notificationServerError } from './notification';
 
 axios.defaults.baseURL = 'https://pixabay.com/api/';
 
@@ -14,8 +15,15 @@ export async function imagesApi({ search, page }) {
         page: page,
       },
     });
+    if (response.status !== 200) {
+      // console.log('in if not200 in imagesApi');
+      notificationServerError();
+      return;
+    }
     return response;
   } catch (error) {
-    console.log('error', error);
+    // console.log('error in imagesApi', error);
+    notificationServerError();
+    return;
   }
 }
