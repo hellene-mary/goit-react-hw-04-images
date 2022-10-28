@@ -1,12 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
+import * as Scroll from 'react-scroll';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 import { Button } from './Button/Button';
 import { ImageGallery } from './imageGallery/ImageGallery';
 import { ImageGalleryItem } from './imageGalleryItem/ImageGalleryItem';
 import { Modal } from './Modal/Modal';
 import { Searchbar } from './searchbar/Searchbar';
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
 import * as message from './notification';
 import { imagesApi } from './imagesApi';
 import { Loader } from './Loader/Loader';
@@ -21,6 +23,41 @@ export function App() {
 
   const maxPage = Math.ceil(totalImages / 12);
   const showButton = images.length > 0 && page < maxPage;
+
+  useEffect(() => {
+    if (search === '') {
+      return;
+    }
+
+    async function newSearchRequestServer() {
+      try {
+        const response = await imagesApi({ search, page });
+        const totalImages = response.data.totalHits;
+        const images = response.data.hits;
+
+        if (totalImages === 0 || images === '') {
+          return message.notificationError();
+        }
+        if (page === 1) {
+          message.notificationSuccess(totalImages);
+        }
+        setImages(prevState => [...prevState, ...images]);
+        setTotalImages(totalImages);
+      } catch (error) {
+        // console.log('error in newSearchRequestServer');
+        message.notificationServerError();
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    setLoading(true);
+    newSearchRequestServer();
+
+    return () => {
+      // ^abortController?
+    };
+  }, [search, page]);
 
   function trackingSearchQuery(evt) {
     evt.preventDefault();
@@ -38,45 +75,10 @@ export function App() {
     form.reset();
   }
 
-  useEffect(() => {
-    if (search === '') {
-      return;
-    }
-
-    async function newSearchRequestServer() {
-      try {
-        const response = await imagesApi({ search, page });
-
-        const totalImages = response.data.totalHits;
-        const images = response.data.hits;
-
-        // якщо масив порожній
-        if (totalImages === 0 || images === '') {
-          return message.notificationError();
-        }
-        // якщо ні - записати дані в state
-        setImages(prevState => {
-          return [...prevState, ...images];
-        });
-        setTotalImages(totalImages);
-      } catch (error) {
-        // console.log('error in newSearchRequestServer');
-        message.notificationServerError();
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    setLoading(true);
-    newSearchRequestServer();
-
-    return () => {
-      // abortColle
-    };
-  }, [search, page]);
-
   function loadMoreImages() {
     setPage(prevState => prevState + 1);
+
+    scrolling();
   }
 
   function openModal(evt) {
@@ -87,6 +89,11 @@ export function App() {
 
   function closeModal() {
     setSelectImage(null);
+  }
+
+  function scrolling() {
+    const scroll = Scroll.animateScroll;
+    scroll.scrollMore(650);
   }
 
   return (
