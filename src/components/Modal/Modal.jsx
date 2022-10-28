@@ -6,6 +6,12 @@ export function Modal({ onClose, image }) {
   const { url, alt } = image;
 
   useEffect(() => {
+    function keydownClick(evt) {
+      if (evt.code === 'Escape') {
+        onClose();
+      }
+    }
+
     window.addEventListener('keydown', keydownClick);
 
     return () => {
@@ -16,12 +22,6 @@ export function Modal({ onClose, image }) {
 
   function backdropClick(evt) {
     if (evt.target === evt.currentTarget) {
-      onClose();
-    }
-  }
-
-  function keydownClick(evt) {
-    if (evt.code === 'Escape') {
       onClose();
     }
   }
